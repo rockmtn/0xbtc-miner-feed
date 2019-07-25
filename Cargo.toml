@@ -1,5 +1,5 @@
 [package]
-name = "rms"
+name = "0xbtc-miner-feed"
 version = "0.1.0"
 authors = ["rockmtn <rockmtn@protonmail.com>"]
 
@@ -9,3 +9,4 @@ config = "0.9.3"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 reqwest = "0.9.19"
 serde = "1.0.97"
+openssl-sys = { version = "0.9.48", features = ["vendored"] }
