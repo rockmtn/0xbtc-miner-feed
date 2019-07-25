@@ -1,0 +1,11 @@
+[package]
+name = "rms"
+version = "0.1.0"
+authors = ["rockmtn <rockmtn@protonmail.com>"]
+
+[dependencies]
+websocket = "0.23.0"
+config = "0.9.3"
+serde_json = { version = "1.0", features = ["preserve_order"] }
+reqwest = "0.9.19"
+serde = "1.0.97"
