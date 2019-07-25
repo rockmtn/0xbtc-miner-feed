@@ -282,7 +282,6 @@ fn handle_stream(
                 println!("wss message: {:?}", message);
                 if let OwnedMessage::Text(ref txt) = message {
                     let json = txt.to_string();
-                    //let json = json!({"params":{"result":{"data":"0x000000000000000000000000000000000000000000000000000000012a05f20000000000000000000000000000000000000000000000000000000000000173a4cafebabecafebabecafebabecafebabecafebabecafebabecafebabecafebabe"}}}).to_string();
                     let r = serde_json::from_str::<Message>(&json).ok();
                     if let Some(message) = r {
                         let data = message.params.result.data;
