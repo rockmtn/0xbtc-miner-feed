@@ -1,0 +1,15 @@
+[Unit]
+Description=0xbtc-miner-feed
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/0xbtc-miner-feed/
+ExecStart=/home/ubuntu/0xbtc-miner-feed/target/release/0xbtc-miner-feed
+Restart=always
+TimeoutSec=10
+
+[Install]
+WantedBy=multi-user.target
