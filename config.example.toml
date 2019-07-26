@@ -11,3 +11,9 @@ provider_url_https = "https://mainnet.infura.io/v3/xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 #listen = "127.0.0.1:3333"
 #listen = "0.0.0.0:8000"
 listen = "0.0.0.0:3333"
+
+# if set, force sending of mining params to all clients once every
+# <n> seconds, even if mining parameters haven't actually changed.
+# (this is to help mining programmers during development and testing.)
+# example, send every 10 seconds:
+#force_send = 10

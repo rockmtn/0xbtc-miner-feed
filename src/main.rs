@@ -43,6 +43,7 @@ fn main() {
     let wss_url = settings.get_str("provider_url").expect("bad config");
     let https_url = settings.get_str("provider_url_https").expect("bad config");
     let listen_ap = settings.get_str("listen").expect("bad config");
+    let force_send = settings.get_int("force_send").ok();
 
     let (tid_tx, tid_rx) = channel::<ThreadId>();
     let client_txs = Arc::new(Mutex::new(ClientTxs::new()));
@@ -51,6 +52,14 @@ fn main() {
 
     start_stats_thread(client_txs.clone(), tid_rx);
     start_ping_thread(client_txs.clone());
+    if let Some(every) = force_send {
+        start_force_send_thread(
+            every,
+            client_txs.clone(),
+            mining_target.clone(),
+            challenge_number.clone(),
+        );
+    }
     start_params_thread(
         https_url,
         client_txs.clone(),
@@ -121,6 +130,23 @@ fn start_ping_thread(client_txs_m: AM<ClientTxs>) {
             }
             thread::sleep(Duration::from_secs(30));
         }
+    });
+}
+
+fn start_force_send_thread(
+    every: i64,
+    client_txs_m: AM<ClientTxs>,
+    mt_m: AM<String>,
+    cn_m: AM<String>,
+) {
+    println!("every = {}", every);
+    thread::spawn(move || loop {
+        let mt = mt_m.lock().unwrap().to_string();
+        let cn = cn_m.lock().unwrap().to_string();
+        if mt != "" && cn != "" {
+            broadcast_mining_params(client_txs_m.clone(), mt, cn);
+        }
+        thread::sleep(Duration::from_secs(every as u64));
     });
 }
 
