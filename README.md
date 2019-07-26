@@ -4,7 +4,7 @@ Low-latency mining parameters server for 0xBitcoin miners (Rust).
 
 ## Download
 
-- Linux static binary: [0xbtc-miner-feed_v0.1.0.zip]<https://github.com/rockmtn/0xbtc-miner-feed/releases/download/v0.1.0/0xbtc-miner-feed_v0.1.0.zip>
+- Linux static binary: [0xbtc-miner-feed_v0.1.0.zip](https://github.com/rockmtn/0xbtc-miner-feed/releases/download/v0.1.0/0xbtc-miner-feed_v0.1.0.zip)
 
 ## Configure
 
