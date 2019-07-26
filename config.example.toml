@@ -1,7 +1,11 @@
-# INFURA, parity, geth, etc. Note: must be a secure websockets url (wss://)
+# INFURA, parity, geth, etc.
+# Note: must be a secure websockets url (wss://)
 provider_url = "wss://mainnet.infura.io/ws/v3/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-# INFURA, parity, geth, etc. Note: must be HTTPS url (https://)
+
+# INFURA, parity, geth, etc.
+# Note: must be HTTPS url (https://)
 provider_url_https = "https://mainnet.infura.io/v3/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
 # ip and port to bind
 # examples:
 #listen = "127.0.0.1:3333"

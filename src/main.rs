@@ -37,7 +37,7 @@ const TOP_MT: &str = "0xcf6fbb9dcea7d07263ab4f5c3a92f53af33dffc421d9d121e1c74b30
 fn main() {
     let mut settings = config::Config::default();
     if let Err(_) = settings.merge(config::File::with_name("config")) {
-        println!("ERROR: can't find config.toml");
+        println!("ERROR: error loading config.toml");
         process::exit(1);
     }
     let wss_url = settings.get_str("provider_url").expect("bad config");
