@@ -133,8 +133,8 @@ struct BatchReply {
 fn start_params_thread(
     https_url: String,
     client_txs_m: AM<ClientTxs>,
-    mining_target_m: AM<String>,
-    challenge_number_m: AM<String>,
+    mt_m: AM<String>,
+    cn_m: AM<String>,
 ) {
     let batch_req = json!(
         [
@@ -159,8 +159,8 @@ fn start_params_thread(
             let json = body.text().unwrap();
             let r = serde_json::from_str::<Vec<BatchReply>>(&json).ok();
             if let Some(replies) = r {
-                let mut mt = mining_target_m.lock().unwrap();
-                let mut cn = challenge_number_m.lock().unwrap();
+                let mut mt = mt_m.lock().unwrap();
+                let mut cn = cn_m.lock().unwrap();
                 let mut changed = false;
                 for reply in replies.iter() {
                     if reply.id == 1 {
@@ -211,16 +211,16 @@ struct Result {
 fn start_stream_thread(
     wss_url: String,
     client_txs_m: AM<ClientTxs>,
-    mining_target_m: AM<String>,
-    challenge_number_m: AM<String>,
+    mt_m: AM<String>,
+    cn_m: AM<String>,
 ) {
     thread::spawn(move || loop {
-        let ct_m = client_txs_m.clone();
-        let mt_m = mining_target_m.clone();
-        let cn_m = challenge_number_m.clone();
+        let client_txs_m = client_txs_m.clone();
+        let mt_m = mt_m.clone();
+        let cn_m = cn_m.clone();
         if let Some(mut cb) = ClientBuilder::new(&wss_url).ok() {
             if let Ok(client) = cb.connect_secure(None) {
-                handle_stream(client, ct_m, mt_m, cn_m);
+                handle_stream(client, client_txs_m, mt_m, cn_m);
             }
         }
         thread::sleep(Duration::from_secs(1));
@@ -230,8 +230,8 @@ fn start_stream_thread(
 fn handle_stream(
     mut client: Client<TlsStream<TcpStream>>,
     client_txs_m: AM<ClientTxs>,
-    mining_target_m: AM<String>,
-    challenge_number_m: AM<String>,
+    mt_m: AM<String>,
+    cn_m: AM<String>,
 ) {
     println!("wss connected.");
     let req = OwnedMessage::Text(
@@ -270,8 +270,8 @@ fn handle_stream(
                     if let Some(message) = r {
                         let data = message.params.result.data;
                         if data.len() == 194 {
-                            let mt = mining_target_m.lock().unwrap();
-                            let mut cn = challenge_number_m.lock().unwrap();
+                            let mt = mt_m.lock().unwrap();
+                            let mut cn = cn_m.lock().unwrap();
                             cn.clear();
                             cn.push_str("0x");
                             cn.push_str(&data[130..194]);
@@ -291,7 +291,7 @@ fn handle_stream(
 fn serve_forever(
     listen_ap: String,
     tid_tx: ThreadIdTx,
-    ct_m: AM<ClientTxs>,
+    client_txs_m: AM<ClientTxs>,
     mt_m: AM<String>,
     cn_m: AM<String>,
 ) {
@@ -307,7 +307,7 @@ fn serve_forever(
                 tid_tx.clone(),
                 mt_m.clone(),
                 cn_m.clone(),
-                ct_m.clone(),
+                client_txs_m.clone(),
             );
             next_id += 1;
         }
@@ -321,7 +321,7 @@ fn start_client_thread(
     tid_tx: ThreadIdTx,
     mt_m: AM<String>,
     cn_m: AM<String>,
-    ct_m: AM<ClientTxs>,
+    client_txs_m: AM<ClientTxs>,
 ) {
     let tid_tx2 = tid_tx.clone();
     let (mtx, mrx) = channel();
@@ -338,8 +338,8 @@ fn start_client_thread(
         } else {
             "".to_string()
         };
-        ct_m.lock().unwrap().insert(tid, mtx);
-        let num = ct_m.lock().unwrap().len();
+        client_txs_m.lock().unwrap().insert(tid, mtx);
+        let num = client_txs_m.lock().unwrap().len();
         println!("{} threads", num);
         thread::spawn(move || handle_client(stream, tid_tx2, tid, mrx, msg));
     }
