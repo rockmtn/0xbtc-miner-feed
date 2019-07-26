@@ -2,7 +2,22 @@
 
 Low-latency mining parameters server for 0xBitcoin miners (Rust).
 
-## Build
+## Download
+
+- Linux static binary: [0xbtc-miner-feed_v0.1.0.zip]<https://github.com/rockmtn/0xbtc-miner-feed/releases/download/v0.1.0/0xbtc-miner-feed_v0.1.0.zip>
+
+## Configure
+
+After downloading, copy `config.example.toml` to `config.toml` and edit the values in the latter file.
+
+```
+cp config.example.toml config.toml
+# then edit config.toml
+```
+
+- Example config: [config.example.toml](config.example.toml)
+
+## Building from source
 
 Install Rust: <https://www.rust-lang.org/tools/install>
 
@@ -11,15 +26,6 @@ Build for development:
 cargo build
 # or if you don't want debug features:
 cargo build --release
-```
-
-## Configure
-
-Example configuration is here: [config.example.toml](config.example.toml)
-
-```
-cp config.example.toml config.toml
-# then edit config.toml
 ```
 
 ## Running
