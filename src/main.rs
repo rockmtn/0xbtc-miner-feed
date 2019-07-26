@@ -32,8 +32,7 @@ type AM<T> = Arc<Mutex<T>>;
 const ADDR: &str = "0xb6ed7644c69416d67b522e20bc294a9a9b405b31";
 const SIG_MT: &str = "0x8a769d35"; // miningTarget()
 const SIG_CN: &str = "0x8ae0368b"; // challengeNumber()
-const TOP_MT: &str =
-    "0xcf6fbb9dcea7d07263ab4f5c3a92f53af33dffc421d9d121e1c74b307e68189d"; // Mint()
+const TOP_MT: &str = "0xcf6fbb9dcea7d07263ab4f5c3a92f53af33dffc421d9d121e1c74b307e68189d"; // Mint()
 
 fn main() {
     let mut settings = config::Config::default();
@@ -73,31 +72,24 @@ fn main() {
     );
 }
 
-fn handle_client(
-    mut stream: TcpStream,
-    tid_tx: ThreadIdTx,
-    tid: u32,
-    mrx: MessageRx,
-    msg: String,
-) {
+fn handle_client(mut stream: TcpStream, tid_tx: ThreadIdTx, tid: u32, mrx: MessageRx, msg: String) {
     let _ = stream.set_nonblocking(true);
     if msg != "" {
         stream.write((msg + "\n").as_bytes()).ok();
     }
     loop {
-        let still_connected =
-            if let Ok(msg) = mrx.recv_timeout(Duration::from_secs(1)) {
-                // another thread gave us data to send to client
-                stream.write((msg + "\n").as_bytes()).is_ok()
-            } else {
-                // check tcp stream about once per second
-                match stream.read(&mut [0; 1024]) {
-                    // T: got data (ignore); F: disconnected
-                    Ok(len) => len > 0,
-                    // T: no data (normal); F: disconnected
-                    Err(e) => e.kind() == WouldBlock,
-                }
-            };
+        let still_connected = if let Ok(msg) = mrx.recv_timeout(Duration::from_secs(1)) {
+            // another thread gave us data to send to client
+            stream.write((msg + "\n").as_bytes()).is_ok()
+        } else {
+            // check tcp stream about once per second
+            match stream.read(&mut [0; 1024]) {
+                // T: got data (ignore); F: disconnected
+                Ok(len) => len > 0,
+                // T: no data (normal); F: disconnected
+                Err(e) => e.kind() == WouldBlock,
+            }
+        };
         if !still_connected {
             break;
         }
@@ -183,11 +175,7 @@ fn start_params_thread(
                 }
                 if changed {
                     println!("CHANGED!!!");
-                    broadcast_mining_params(
-                        client_txs_m.clone(),
-                        mt.to_string(),
-                        cn.to_string(),
-                    );
+                    broadcast_mining_params(client_txs_m.clone(), mt.to_string(), cn.to_string());
                 }
             }
         }
@@ -195,11 +183,7 @@ fn start_params_thread(
     });
 }
 
-fn broadcast_mining_params(
-    client_txs_m: AM<ClientTxs>,
-    mt: String,
-    cn: String,
-) {
+fn broadcast_mining_params(client_txs_m: AM<ClientTxs>, mt: String, cn: String) {
     let client_txs = client_txs_m.lock().unwrap();
     for (_, mtx) in client_txs.iter() {
         let json = json!({
